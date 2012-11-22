@@ -21,7 +21,7 @@ Begin Window ScaleWindow
    MinWidth        =   64
    Placement       =   1
    Resizeable      =   False
-   Title           =   "Scale Image - BROKEN!"
+   Title           =   "Scale Image"
    Visible         =   True
    Width           =   321
    Begin Slider widthslider
@@ -102,7 +102,6 @@ Begin Window ScaleWindow
       Selectable      =   False
       TabIndex        =   2
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Width"
       TextAlign       =   0
       TextColor       =   0
@@ -137,7 +136,6 @@ Begin Window ScaleWindow
       Selectable      =   False
       TabIndex        =   3
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Height"
       TextAlign       =   0
       TextColor       =   0
@@ -222,7 +220,7 @@ Begin Window ScaleWindow
       Underline       =   ""
       UseFocusRing    =   True
       Visible         =   True
-      Width           =   30
+      Width           =   38
    End
    Begin TextField heighttext
       AcceptTabs      =   ""
@@ -264,7 +262,7 @@ Begin Window ScaleWindow
       Underline       =   ""
       UseFocusRing    =   True
       Visible         =   True
-      Width           =   30
+      Width           =   38
    End
    Begin PushButton PushButton1
       AutoDeactivate  =   True

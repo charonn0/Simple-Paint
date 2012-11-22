@@ -979,7 +979,7 @@ Class FreeImage
 
 	#tag Method, Flags = &h0
 		 Shared Function LoadU(file as folderitem, FIF as FI_Format) As FreeImage
-		  #if TargetWin32 
+		  #if TargetWin32
 		    const fname = "_FreeImage_LoadU@12"
 		    Soft Declare Function FreeImage_LoadU Lib "FreeImage" _
 		    Alias "_FreeImage_LoadU@12" ( fif as Integer, fileName as CString, flags as Integer ) as Ptr
@@ -1235,7 +1235,7 @@ Class FreeImage
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function RotateEx(angle as double, x_shift as double=-1, y_shift as double=-1, x_origin as double=0, y_origin as double=0, use_mask as boolean = false) As FreeImage
+		Function RotateEx(angle as double, x_shift as double = - 1, y_shift as double = - 1, x_origin as double = 0, y_origin as double = 0, use_mask as boolean = false) As FreeImage
 		  
 		  if x_origin = -1 then
 		    x_origin = me.Width / 2
@@ -1414,7 +1414,7 @@ Class FreeImage
 		Function SetMask(mask as FreeImage) As FreeImage
 		  if mask = nil then return nil
 		  
-		  dim greymask As FreeImage 
+		  dim greymask As FreeImage
 		  if mask.GetBPP <> 8 then
 		    greymask = mask.Greyscale
 		    if greymask = nil then return nil
@@ -1631,7 +1631,7 @@ Class FreeImage
 		#tag EndGetter
 		#tag Setter
 			Set
-			  'DLL_API BOOL DLL_CALLCONV FreeImage_SetBackgroundColor(FIBITMAP *dib, RGBQUAD  *bkcolor);  
+			  'DLL_API BOOL DLL_CALLCONV FreeImage_SetBackgroundColor(FIBITMAP *dib, RGBQUAD  *bkcolor);
 			  
 			  dim mb as new MemoryBlock( 8 )
 			  mb.Byte( 0 ) = value.Red

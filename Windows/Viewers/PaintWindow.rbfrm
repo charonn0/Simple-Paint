@@ -995,15 +995,6 @@ End
 #tag EndEvents
 #tag Events Vertical
 	#tag Event
-		Sub ValueChanged()
-		  Static lastVal As Integer
-		  PaintTarget1.Scrolling = True
-		  PaintTarget1.Scroll(0, Me.Value)
-		  PaintTarget1.Scrolling = False
-		  
-		End Sub
-	#tag EndEvent
-	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
 		  #pragma Unused X
 		  #pragma Unused Y
@@ -1012,16 +1003,13 @@ End
 		  End If
 		End Function
 	#tag EndEvent
-#tag EndEvents
-#tag Events Horitontal
 	#tag Event
 		Sub ValueChanged()
-		  PaintTarget1.Scrolling = True
-		  PaintTarget1.Scroll(Me.Value, 0)
-		  PaintTarget1.Scrolling = False
-		  
+		  PaintTarget1.ScrollY(Me.Value)
 		End Sub
 	#tag EndEvent
+#tag EndEvents
+#tag Events Horitontal
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
 		  #pragma Unused X
@@ -1030,6 +1018,12 @@ End
 		    HelpWin.ShowMe("Main.Horizontal Slider")
 		  End If
 		End Function
+	#tag EndEvent
+	#tag Event
+		Sub ValueChanged()
+		  PaintTarget1.ScrollX(Me.Value)
+		  
+		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events Timer1

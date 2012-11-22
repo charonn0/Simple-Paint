@@ -71,7 +71,7 @@ Inherits Canvas
 		  If CheckMode(Master_Mode_Display) Then
 		    //Calculate the clicked tile, if any, and bring it to the top.
 		    currentObject = hitpointToObject(x, y)
-		    If currentObject > -1 Then 
+		    If currentObject > -1 Then
 		      bringToFront(currentObject)
 		    Else
 		      ResetHilights()
@@ -83,12 +83,12 @@ Inherits Canvas
 		    Call RaiseEvent MouseDown(X, Y)
 		    Return True
 		  Else
-		    If MainWindow.DropperMode Then 
+		    If MainWindow.DropperMode Then
 		      Return RaiseEvent MouseDown(X, Y)  //Eyedropper mode so raise the event to the instance handler
 		    End If
 		    
 		    Dim ret As Boolean
-		    If X >= Buffer.Width And X <= Buffer.Width + 5 And Y >= Buffer.Height And Y <= Buffer.Height + 5 Then
+		    If X >= Buffer.Width + ViewX And X <= Buffer.Width + ViewX + 5 And Y >= Buffer.Height + ViewY And Y <= Buffer.Height + ViewY + 5 Then
 		      Resizing = True
 		      Return True
 		      If IsContextualClick Then
@@ -172,7 +172,7 @@ Inherits Canvas
 		          t = t + 1
 		        End If
 		      Case Mode_DrawLine
-		        PreviewLine(X, Y) //NOT USED YET
+		        PreviewLine(DragStartX, DragStartY, X, Y)
 		      Case Mode_Draw_Circle
 		        PreviewOval(DragStartX, DragStartY, X - DragStartX, Y - DragStartY)
 		      Case Mode_Draw_Rect
@@ -228,6 +228,8 @@ Inherits Canvas
 		  If Not CheckMode(Master_Mode_Display) Then
 		    'If Mode = Select_Mode_Wait Then Return
 		    Select Case Mode
+		    Case Mode_DrawLine
+		      DrawLine(DragStartX, DragStartY, X, Y)
 		    Case Mode_Draw_Circle
 		      DrawOval(DragStartX, DragStartY, X - DragStartX, Y - DragStartY)
 		    Case Mode_Draw_Rect
@@ -249,7 +251,7 @@ Inherits Canvas
 		      SaveUndo(True)
 		      Me.MouseCursor = MainWindow.CurrentCursor
 		      Resizing = False
-		      Dim tmp As Picture = NewBuffer(X, Y, 32)
+		      Dim tmp As Picture = NewBuffer(X - ViewX, Y - ViewY, 32)
 		      'tmp.Transparent = Me.IsTransparent
 		      tmp.Graphics.DrawPicture(Buffer, 0, 0)
 		      tmp.Graphics.ForeColor = CurrentColor
@@ -307,7 +309,7 @@ Inherits Canvas
 		    
 		    tmp.Graphics.DrawPicture(Overlay, 0, 0)
 		    tmp.Graphics.ForeColor = &c494949
-		    tmp.Graphics.FillRect(Buffer.Width, Buffer.Height, 5, 5)  //Resize thumb
+		    tmp.Graphics.FillRect(Buffer.Width + ViewX, Buffer.Height + ViewY, 5, 5)  //Resize thumb
 		    If Mode <> Mode_Draw_Freeform Then Overlay = Nil
 		    
 		    If Resizing Then
@@ -616,22 +618,30 @@ Inherits Canvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub DrawLine(X As Integer, Y As Integer)
-		  
-		  If X <= Buffer.Width And X > 0 And Y <= Buffer.Height And Y > 0 Then
-		    //NOT USED YET
-		    If CancelDraw Then
-		      CancelDraw = False
-		      Refresh(False)
-		      Return
-		    End If
-		    SaveUndo()
-		    Buffer.Graphics.DrawLine(DragStartX, DragStartY, TrueX(X), TrueY(Y))
-		    DragStartX = X
-		    DragStartY = Y
-		    Taint = True
-		    Refresh(False)
+		Private Sub DrawLine(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+		  If CancelDraw Then
+		    CancelDraw = False
+		    Invalidate(False)
+		    Return
 		  End If
+		  SaveUndo()
+		  
+		  If X2 < 0 Then
+		    X2 = Abs(X2)
+		    X1 = X1 - X2
+		  End If
+		  If Y2 < 0 Then
+		    Y2 = Abs(Y2)
+		    Y1 = Y1 - Y2
+		  End If
+		  
+		  'Buffer.Graphics.PenWidth = 10
+		  'Buffer.Graphics.PenHeight = 10
+		  'Buffer.Graphics.ForeColor = &c00FF59
+		  Buffer.Graphics.DrawLine(X1, Y1, X2, Y2)
+		  Taint = True
+		  Invalidate(False)
+		  
 		End Sub
 	#tag EndMethod
 
@@ -650,7 +660,7 @@ Inherits Canvas
 		  End If
 		  
 		  //Draw the tile to the buff.
-		  buff.Graphics.DrawPicture(objects(index).image, objects(index).x, objects(index).y)  
+		  buff.Graphics.DrawPicture(objects(index).image, objects(index).x, objects(index).y)
 		  
 		  Dim strW, strH As Integer
 		  Dim nm As String = Objects(index).Properties.Value("Key").Shorten(20)
@@ -681,7 +691,7 @@ Inherits Canvas
 		  End If
 		  
 		  //Draw the tile to the buffer.
-		  buffer.Graphics.DrawPicture(objects(index).image, objects(index).x, objects(index).y)  
+		  buffer.Graphics.DrawPicture(objects(index).image, objects(index).x, objects(index).y)
 		End Sub
 	#tag EndMethod
 
@@ -942,17 +952,20 @@ Inherits Canvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub PreviewLine(X As Integer, Y As Integer)
-		  //NOT USED YET
-		  Overlay.Graphics.DrawLine(DragStartX, DragStartY, X, Y)
-		  DragStartX = X
-		  DragStartY = Y
-		  Overlay.Graphics.PenWidth = 1
-		  Overlay.Graphics.PenHeight = 1
-		  Overlay.Graphics.ForeColor = &c00FF59
-		  Overlay.Graphics.DrawLine(X - 1, Y - 1, Width + 2, Height + 2)
-		  Overlay.Graphics.ForeColor = &c00FF59
-		  Overlay.Graphics.DrawLine(X + 1, Y + 1, Width - 2, Height - 2)
+		Private Sub PreviewLine(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+		  If X2 < 0 Then
+		    X2 = Abs(X2)
+		    X1 = X1 - X2
+		  End If
+		  If Y2 < 0 Then
+		    Y2 = Abs(Y2)
+		    Y1 = Y1 - Y2
+		  End If
+		  
+		  'Overlay.Graphics.PenWidth = 1
+		  'Overlay.Graphics.PenHeight = 1
+		  'Overlay.Graphics.ForeColor = &c00FF59
+		  Overlay.Graphics.DrawLine(X1, Y1, X2, Y2)
 		  Refresh(False)
 		End Sub
 	#tag EndMethod
@@ -1213,24 +1226,21 @@ Inherits Canvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Scroll(X As Integer, Y As Integer)
-		  Const scrollAmount = 10
-		  
-		  If Sign(X) = 1 Then
-		    ViewX = (X * scrollAmount) + ViewX
-		  ElseIf Sign(x) = -1 Then
-		    ViewX = ViewX - (X * scrollAmount) 
-		  End If
-		  
-		  If Sign(Y) = -1 Then
-		    ViewY = (Y * scrollAmount) + ViewY
-		  ElseIf Sign(Y) = 1 Then
-		    ViewY = ViewY - (Y * scrollAmount)
-		  End If
+		Sub ScrollX(X As Integer)
+		  ViewX = -(X * Me.ActualSize.Left \ 100)
 		  
 		  
 		  'If Y <> -1 Then ViewY = Y + ViewY
-		  Refresh(False)
+		  Invalidate(False)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub ScrollY(Y As Integer)
+		  ViewY = -(Y * Me.ActualSize.Right \ 100)
+		  
+		  'If Y <> -1 Then ViewY = Y + ViewY
+		  Invalidate(False)
 		End Sub
 	#tag EndMethod
 
@@ -1588,7 +1598,7 @@ Inherits Canvas
 		#tag EndGetter
 		#tag Setter
 			Set
-			  If value < 0.25 Then 
+			  If value < 0.25 Then
 			    mMagLevel = 0.25
 			  Else
 			    mMagLevel = value
@@ -1672,7 +1682,7 @@ Inherits Canvas
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  If mOverlay = Nil Then 
+			  If mOverlay = Nil Then
 			    mOverlay = NewBuffer(Buffer.Width, Buffer.Height, 32)
 			    mOverlay.Transparent = 1
 			    mOverlay.Graphics.ForeColor = CurrentColor

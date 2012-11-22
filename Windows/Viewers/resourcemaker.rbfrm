@@ -159,21 +159,23 @@ End
 #tag Events PushButton1
 	#tag Event
 		Sub Action()
-		  Dim vv As SafeVirtualVolume
+		  Dim vv As VirtualVolume
 		  Dim f As FolderItem = GetSaveFolderItem(FileTypes1.SimplePaintResourceFile, "icons")
 		  
 		  If f <> Nil Then
-		    vv = New SafeVirtualVolume()
+		    vv = f.OpenAsVirtualVolume
 		    Call MemoryManager.FlushCache()
 		    For i As Integer = 0 To UBound(Items)
 		      Dim sf As StackFrame = GetFrame(Items(i))
-		      If sf = Nil Then 
+		      If sf = Nil Then
 		        Continue
 		      End If
 		      sf.CopyTo(vv.Root.Child(Items(i)))
 		    Next
-		    vv.Save(f)
-		    vv.Close
+		    'vv.Save(f)
+		    'vv.Close
+		    vv.Flush
+		    vv = Nil
 		    MsgBox("Done")
 		  Else
 		    MsgBox("No file")

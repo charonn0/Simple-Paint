@@ -59,9 +59,7 @@ Begin Window aboutwin
       Mode            =   2
       Period          =   1000
       Scope           =   0
-      TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   -44
       Width           =   32
    End
@@ -87,7 +85,6 @@ Begin Window aboutwin
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Simple Paint"
       TextAlign       =   0
       TextColor       =   0
@@ -100,14 +97,19 @@ Begin Window aboutwin
       Visible         =   True
       Width           =   261
    End
-   Begin Label Label2
+   Begin LinkLabel Label2
+      ActiveColor     =   "&cFF0000"
+      AltText         =   ""
       AutoDeactivate  =   True
       Bold            =   ""
       DataField       =   ""
       DataSource      =   ""
+      Draggable       =   False
       Enabled         =   True
       Height          =   20
       HelpTag         =   ""
+      HilightColor    =   "&c00FFFF"
+      HoverPeriod     =   250
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
@@ -118,14 +120,14 @@ Begin Window aboutwin
       LockRight       =   ""
       LockTop         =   True
       Multiline       =   ""
+      ResetPeriod     =   1000
       Scope           =   0
       Selectable      =   False
       TabIndex        =   2
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "By Andrew"
       TextAlign       =   0
-      TextColor       =   0
+      TextColor       =   &h000000FF
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
@@ -133,7 +135,7 @@ Begin Window aboutwin
       Transparent     =   True
       Underline       =   ""
       Visible         =   True
-      Width           =   136
+      Width           =   73
    End
    Begin PushButton PushButton1
       AutoDeactivate  =   True
@@ -238,6 +240,13 @@ End
 	#tag Event
 		Sub Open()
 		  'Me.Text = Me.Text + " " + Version
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Label2
+	#tag Event
+		Sub Action()
+		  ShowURL("http://www.boredomsoft.org/simple-paint.bs")
 		End Sub
 	#tag EndEvent
 #tag EndEvents

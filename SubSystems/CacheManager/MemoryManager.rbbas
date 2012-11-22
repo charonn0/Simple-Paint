@@ -52,9 +52,11 @@ Protected Module MemoryManager
 		  f.CreateAsFolder()
 		  Dim resourcefile As FolderItem
 		  resourcefile = App.ExecutableFile.Parent.Child("icons.res")
+		  
 		  If resourcefile.Exists Then
 		    Debug("Found the icons file at: " + resourcefile.AbsolutePath)
-		    Dim vv As New SafeVirtualVolume(resourcefile)
+		    Dim vv As VirtualVolume
+		    vv = resourcefile.OpenAsVirtualVolume
 		    For i As Integer = 1 To vv.Root.Count
 		      Dim g As FolderItem = SpecialFolder.Temporary.Child("Simple Paint").Child(vv.Root.Item(i).Name)
 		      vv.Root.Item(i).CopyFileTo(g)
@@ -157,7 +159,7 @@ Protected Module MemoryManager
 
 	#tag Method, Flags = &h0
 		Function GetFrame(Name As String) As StackFrame
-		  If Name.Trim = "" Then Return Nil 
+		  If Name.Trim = "" Then Return Nil
 		  If Dumped Then
 		    Debug("Cache was dumped!!")
 		    Return Nil
@@ -238,14 +240,14 @@ Protected Module MemoryManager
 	#tag Method, Flags = &h0
 		Function Iconize(buffer As Picture, size As Integer = 16) As Picture
 		  If buffer.Width <= size Then Return buffer
-		  If Not FreeImageAvailable Then
-		    Dim sc As Double = size / Buffer.Width
-		    Buffer = Images.Scale(Buffer, sc)
-		  Else
-		    Dim fi As FreeImage = FreeImage.LoadFromMemory(buffer.GetData(Picture.FormatPNG, Picture.QualityHigh))
-		    buffer = GetFIPic(fi.Rescale(size, size))
-		    buffer.Transparent = 1
-		  End If
+		  'If Not FreeImageAvailable Then
+		  Dim sc As Double = size / Buffer.Width
+		  Buffer = Images.Scale(Buffer, sc)
+		  'Else
+		  'Dim fi As FreeImage = FreeImage.LoadFromMemory(buffer.GetData(Picture.FormatPNG, Picture.QualityHigh))
+		  'buffer = GetFIPic(fi.Rescale(size, size))
+		  'buffer.Transparent = 1
+		  'End If
 		  
 		  Return buffer
 		End Function
